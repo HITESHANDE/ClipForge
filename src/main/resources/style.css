@@ -1,0 +1,614 @@
+/* ============================================================================
+   ClipForge — "Edit bay" design system.
+
+   Surfaces are neutral graphite (no colour cast), because you judge video colour
+   against them. One action colour: marker yellow, the colour edit suites use for
+   markers and timecode. Green and red mean exactly one thing each: the start and
+   the end of your clip. Errors reuse the red; success reuses the green.
+
+   Type: Bricolage Grotesque for the whole interface (bundled, OFL).
+         JetBrains Mono only for timecodes, so digits stay put while they change.
+   ============================================================================ */
+
+.root {
+    /* palette */
+    -cf-bay: #222327;          /* window */
+    -cf-panel: #2a2b30;        /* the one surface per step */
+    -cf-field: #1b1c1f;        /* inputs, lists, video wells */
+    -cf-line: #3a3b42;
+    -cf-line-soft: #323339;
+    -cf-text: #edece7;
+    -cf-muted: #a3a2aa;
+    -cf-faint: #77767e;
+    -cf-marker: #f5c542;
+    -cf-marker-hover: #ffd45e;
+    -cf-marker-press: #ddb038;
+    -cf-on-marker: #1e1a0c;
+    -cf-in: #4cc38a;
+    -cf-out: #ef6a5e;
+
+    -fx-base: #2a2b30;
+    -fx-background: #222327;
+    -fx-accent: #f5c542;
+    -fx-focus-color: #f5c542;
+    -fx-faint-focus-color: rgba(245, 197, 66, 0.18);
+    -fx-font-family: "Bricolage Grotesque", "Segoe UI", sans-serif;
+    -fx-font-size: 13.5px;
+    -fx-text-fill: -cf-text;
+}
+
+.app-shell {
+    -fx-background-color: -cf-bay;
+}
+
+/* ---- Header: wordmark + step rail ---- */
+
+.header-bar {
+    -fx-background-color: -cf-bay;
+    -fx-padding: 10 28;
+    -fx-border-color: transparent transparent -cf-line-soft transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+/* The one loud typographic moment: a heavy, tight wordmark. */
+.app-title {
+    -fx-font-family: "Bricolage Grotesque";
+    -fx-font-weight: bold;
+    -fx-font-size: 22px;
+    -fx-text-fill: -cf-text;
+}
+
+.step-item {
+    -fx-padding: 6 10;
+    -fx-background-radius: 999;
+    -fx-cursor: hand;
+}
+.step-item:hover { -fx-background-color: rgba(255, 255, 255, 0.05); }
+.step-item-locked { -fx-cursor: default; -fx-opacity: 0.55; }
+.step-item-locked:hover { -fx-background-color: transparent; }
+
+.step-dot {
+    -fx-min-width: 24; -fx-min-height: 24;
+    -fx-max-width: 24; -fx-max-height: 24;
+    -fx-background-color: transparent;
+    -fx-background-radius: 12;
+    -fx-border-color: -cf-line;
+    -fx-border-radius: 12;
+    -fx-border-width: 1.5;
+    -fx-alignment: center;
+    -fx-text-fill: -cf-muted;
+    -fx-font-family: "Bricolage Grotesque SemiBold";
+    -fx-font-size: 12px;
+}
+.step-name {
+    -fx-text-fill: -cf-muted;
+    -fx-font-size: 13px;
+}
+.step-item-active .step-dot {
+    -fx-background-color: -cf-marker;
+    -fx-border-color: -cf-marker;
+    -fx-text-fill: -cf-on-marker;
+}
+.step-item-active .step-name {
+    -fx-text-fill: -cf-text;
+    -fx-font-family: "Bricolage Grotesque SemiBold";
+}
+.step-item-done .step-dot {
+    -fx-background-color: rgba(76, 195, 138, 0.16);
+    -fx-border-color: -cf-in;
+    -fx-text-fill: -cf-in;
+}
+.step-item-done .step-name { -fx-text-fill: -cf-text; }
+
+.step-connector {
+    -fx-background-color: -cf-line;
+    -fx-min-width: 18; -fx-pref-width: 28; -fx-max-width: 28;
+    -fx-min-height: 1.5; -fx-max-height: 1.5;
+}
+
+/* ---- Page ---- */
+
+.page-scroll, .page-scroll > .viewport {
+    -fx-background-color: -cf-bay;
+    -fx-background: -cf-bay;
+    -fx-padding: 0;
+}
+.page-host {
+    -fx-padding: 18 28 24 28;
+}
+
+.step-head {
+    -fx-padding: 0 2 0 2;
+}
+.step-title {
+    -fx-font-family: "Bricolage Grotesque";
+    -fx-font-weight: bold;
+    -fx-font-size: 26px;
+    -fx-text-fill: -cf-text;
+}
+.step-desc {
+    -fx-text-fill: -cf-muted;
+    -fx-font-size: 14px;
+    -fx-max-width: 720;
+}
+
+/* To-do list under each step heading */
+.guide {
+    -fx-padding: 8 0 0 0;
+}
+.guide-item {
+    -fx-padding: 0;
+}
+.guide-mark {
+    -fx-min-width: 20; -fx-min-height: 20;
+    -fx-max-width: 20; -fx-max-height: 20;
+    -fx-alignment: center;
+    -fx-background-color: -cf-field;
+    -fx-background-radius: 10;
+    -fx-text-fill: -cf-muted;
+    -fx-font-family: "Bricolage Grotesque SemiBold";
+    -fx-font-size: 11px;
+}
+.guide-text {
+    -fx-text-fill: -cf-text;
+    -fx-font-size: 13px;
+}
+.guide-item-done .guide-mark {
+    -fx-background-color: -cf-in;
+    -fx-text-fill: #10261b;
+}
+.guide-item-done .guide-text {
+    -fx-text-fill: -cf-muted;
+}
+
+/* One surface per step; groups inside are separated by space and a hairline, not by
+   more nested cards. */
+.section-card {
+    -fx-background-color: -cf-panel;
+    -fx-background-radius: 12;
+    -fx-padding: 18 20;
+}
+.group-title {
+    -fx-font-family: "Bricolage Grotesque SemiBold";
+    -fx-font-size: 16px;
+    -fx-text-fill: -cf-text;
+}
+.group-separator {
+    -fx-min-height: 1; -fx-max-height: 1;
+    -fx-background-color: -cf-line-soft;
+}
+
+.field-label {
+    -fx-text-fill: -cf-muted;
+    -fx-font-size: 12.5px;
+}
+.hint-label {
+    -fx-text-fill: -cf-faint;
+    -fx-font-size: 12.5px;
+}
+.empty-state {
+    -fx-text-fill: -cf-faint;
+    -fx-font-size: 14px;
+}
+
+/* ---- Inputs ---- */
+
+.text-field, .text-area, .combo-box, .spinner, .color-picker {
+    -fx-background-color: -cf-field;
+    -fx-background-radius: 6;
+    -fx-text-fill: -cf-text;
+    -fx-prompt-text-fill: -cf-faint;
+    -fx-highlight-fill: rgba(245, 197, 66, 0.35);
+    -fx-highlight-text-fill: -cf-text;
+    -fx-border-color: -cf-line;
+    -fx-border-radius: 6;
+    -fx-border-width: 1;
+}
+.text-field { -fx-padding: 8 10; }
+.text-field:focused, .combo-box:focused, .spinner:focused, .color-picker:focused, .text-area:focused {
+    -fx-border-color: -cf-marker;
+    -fx-background-insets: 0;
+}
+.text-area {
+    -fx-control-inner-background: -cf-field;
+}
+.text-area .content {
+    -fx-background-color: -cf-field;
+    -fx-background-radius: 6;
+}
+.text-area .scroll-pane, .text-area .viewport,
+.list-view .scroll-pane, .list-view .viewport {
+    -fx-background-color: transparent;
+}
+
+.time-field {
+    -fx-font-family: "JetBrains Mono";
+    -fx-font-size: 12.5px;
+}
+
+.combo-box .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: -cf-text;
+    -fx-font-family: "Bricolage Grotesque";
+    -fx-font-size: 13px;
+    -fx-padding: 4 8;
+}
+.combo-box .arrow-button { -fx-background-color: transparent; }
+.combo-box .arrow { -fx-background-color: -cf-muted; }
+.combo-box-popup .list-view {
+    -fx-background-color: -cf-field;
+    -fx-border-color: -cf-line;
+    -fx-border-width: 1;
+}
+.combo-box-popup .list-view .list-cell {
+    -fx-font-family: "Bricolage Grotesque";
+    -fx-font-size: 13px;
+    -fx-background-color: -cf-field;
+    -fx-text-fill: -cf-text;
+    -fx-padding: 7 10;
+}
+.combo-box-popup .list-view .list-cell:filled:hover,
+.combo-box-popup .list-view .list-cell:filled:selected {
+    -fx-background-color: rgba(245, 197, 66, 0.16);
+    -fx-text-fill: -cf-text;
+}
+
+.spinner .text-field { -fx-border-width: 0; -fx-background-color: transparent; }
+.spinner .increment-arrow-button, .spinner .decrement-arrow-button {
+    -fx-background-color: transparent;
+}
+.spinner .increment-arrow-button:hover, .spinner .decrement-arrow-button:hover {
+    -fx-background-color: -cf-line-soft;
+}
+.spinner .increment-arrow, .spinner .decrement-arrow { -fx-background-color: -cf-muted; }
+
+.color-picker .arrow-button { -fx-background-color: transparent; }
+.color-picker .arrow { -fx-background-color: -cf-muted; }
+.color-picker .color-picker-label { -fx-text-fill: -cf-text; }
+
+.time-chip {
+    -fx-background-color: -cf-field;
+    -fx-background-radius: 6;
+    -fx-padding: 6 10;
+    -fx-text-fill: -cf-text;
+    -fx-font-family: "JetBrains Mono";
+    -fx-font-size: 12px;
+}
+
+.marker-dot {
+    -fx-min-width: 10; -fx-min-height: 10;
+    -fx-max-width: 10; -fx-max-height: 10;
+    -fx-background-radius: 5;
+}
+.marker-in { -fx-background-color: -cf-in; }
+.marker-out { -fx-background-color: -cf-out; }
+.clip-length {
+    -fx-text-fill: -cf-muted;
+    -fx-font-family: "JetBrains Mono";
+    -fx-font-size: 12px;
+    -fx-padding: 0 0 0 10;
+}
+
+.jump-row {
+    -fx-padding: 10 12;
+    -fx-background-color: -cf-field;
+    -fx-background-radius: 8;
+}
+
+/* ---- Buttons ---- */
+
+.button {
+    -fx-background-color: -cf-line-soft;
+    -fx-text-fill: -cf-text;
+    -fx-background-radius: 6;
+    -fx-padding: 9 16;
+    -fx-cursor: hand;
+    -fx-font-family: "Bricolage Grotesque Medium";
+    -fx-font-size: 13.5px;
+    -fx-border-color: transparent;
+    -fx-border-width: 1;
+    -fx-border-radius: 6;
+}
+.button:hover { -fx-background-color: -cf-line; }
+.button:pressed { -fx-background-color: #45464e; }
+.button:focused {
+    -fx-border-color: -cf-marker;
+}
+.button:disabled { -fx-opacity: 0.4; -fx-cursor: default; }
+
+.primary-btn {
+    -fx-background-color: -cf-marker;
+    -fx-text-fill: -cf-on-marker;
+    -fx-font-family: "Bricolage Grotesque SemiBold";
+}
+.primary-btn:hover { -fx-background-color: -cf-marker-hover; }
+.primary-btn:pressed { -fx-background-color: -cf-marker-press; }
+.primary-btn:focused {
+    -fx-border-color: -cf-text;
+}
+
+.ghost-btn {
+    -fx-background-color: transparent;
+    -fx-border-color: -cf-line;
+    -fx-border-width: 1;
+    -fx-border-radius: 6;
+}
+.ghost-btn:hover { -fx-background-color: rgba(255, 255, 255, 0.05); }
+
+.next-btn {
+    -fx-padding: 10 22;
+    -fx-font-size: 14px;
+}
+
+.icon-btn {
+    -fx-background-color: -cf-line-soft;
+    -fx-background-radius: 20;
+    -fx-min-width: 38; -fx-min-height: 38;
+    -fx-max-width: 38; -fx-max-height: 38;
+    -fx-padding: 0;
+}
+.icon-btn:hover { -fx-background-color: -cf-line; }
+
+/* ---- Video wells ---- */
+
+.video-frame {
+    -fx-background-color: #000000;
+    -fx-background-radius: 8;
+    /* No drop shadow: it would be recomposited on every video frame and cause stutter. */
+}
+
+/* ---- Footer ---- */
+
+.footer-bar {
+    -fx-background-color: -cf-bay;
+    -fx-border-color: -cf-line-soft transparent transparent transparent;
+    -fx-border-width: 1 0 0 0;
+}
+.footer-row {
+    -fx-padding: 10 28;
+}
+.footer-progress {
+    -fx-pref-height: 3; -fx-max-height: 3; -fx-min-height: 3;
+    -fx-padding: 0;
+}
+.footer-progress > .bar {
+    -fx-background-color: -cf-marker;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+    -fx-padding: 1.5;
+}
+.footer-progress > .track {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+}
+
+.status-label { -fx-font-size: 13px; }
+.status-info { -fx-text-fill: -cf-muted; }
+.status-success { -fx-text-fill: -cf-in; }
+.status-error { -fx-text-fill: -cf-out; }
+
+.log-pane > .title {
+    -fx-background-color: transparent;
+    -fx-padding: 0 28 6 28;
+    -fx-border-width: 0;
+}
+.log-pane > .title > .text {
+    -fx-fill: -cf-faint;
+    -fx-font-size: 12px;
+}
+.log-pane > .title > .arrow-button > .arrow { -fx-background-color: -cf-faint; }
+.log-pane > .content {
+    -fx-background-color: -cf-bay;
+    -fx-border-width: 0;
+    -fx-padding: 0 28 14 28;
+}
+.log-area {
+    -fx-font-family: "JetBrains Mono";
+    -fx-font-size: 11px;
+}
+
+/* ---- Busy overlay, toast, dialogs ---- */
+
+.busy-overlay {
+    -fx-background-color: rgba(18, 18, 21, 0.78);
+}
+.busy-card {
+    -fx-background-color: -cf-panel;
+    -fx-background-radius: 14;
+    -fx-padding: 28 32;
+}
+.busy-label {
+    -fx-text-fill: -cf-text;
+    -fx-font-family: "Bricolage Grotesque SemiBold";
+    -fx-font-size: 16px;
+}
+.busy-hint {
+    -fx-text-fill: -cf-faint;
+    -fx-font-size: 12.5px;
+}
+
+.toast {
+    -fx-background-color: #34353b;
+    -fx-background-radius: 999;
+    -fx-padding: 10 18;
+    -fx-text-fill: -cf-text;
+    -fx-font-family: "Bricolage Grotesque Medium";
+    -fx-font-size: 13.5px;
+    -fx-border-color: rgba(76, 195, 138, 0.5);
+    -fx-border-radius: 999;
+    -fx-border-width: 1;
+}
+
+/* In-app dialog: dimmed window, one card. */
+.modal-layer {
+    -fx-background-color: rgba(14, 14, 17, 0.62);
+}
+.sheet-card {
+    -fx-background-color: -cf-panel;
+    -fx-background-radius: 14;
+    -fx-border-color: -cf-line;
+    -fx-border-radius: 14;
+    -fx-border-width: 1;
+    -fx-padding: 22 22 18 22;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.45), 30, 0.1, 0, 10);
+}
+.sheet-icon {
+    -fx-min-width: 34; -fx-min-height: 34;
+    -fx-max-width: 34; -fx-max-height: 34;
+    -fx-background-radius: 17;
+    -fx-alignment: center;
+    -fx-font-family: "Bricolage Grotesque";
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+}
+.sheet-icon-notice { -fx-background-color: rgba(245, 197, 66, 0.16); -fx-text-fill: -cf-marker; }
+.sheet-icon-success { -fx-background-color: rgba(76, 195, 138, 0.16); -fx-text-fill: -cf-in; }
+.sheet-icon-danger { -fx-background-color: rgba(239, 106, 94, 0.16); -fx-text-fill: -cf-out; }
+.sheet-title {
+    -fx-font-family: "Bricolage Grotesque SemiBold";
+    -fx-font-size: 18px;
+    -fx-text-fill: -cf-text;
+}
+.sheet-body {
+    -fx-font-size: 14px;
+    -fx-text-fill: -cf-muted;
+    -fx-line-spacing: 2;
+}
+
+.danger-btn {
+    -fx-background-color: -cf-out;
+    -fx-text-fill: #2a0d0a;
+    -fx-font-family: "Bricolage Grotesque SemiBold";
+}
+.danger-btn:hover { -fx-background-color: #f5847a; }
+.danger-btn:pressed { -fx-background-color: #d9564b; }
+.danger-btn:focused { -fx-border-color: -cf-text; }
+
+/* Sliding underline under the active step in the header rail. */
+.step-indicator {
+    -fx-background-color: -cf-marker;
+    -fx-background-radius: 2;
+}
+
+/* ---- Lists ---- */
+
+.list-view {
+    -fx-background-color: -cf-field;
+    -fx-control-inner-background: -cf-field;
+    -fx-background-radius: 6;
+    -fx-border-color: -cf-line;
+    -fx-border-radius: 6;
+    -fx-border-width: 1;
+}
+.list-cell {
+    -fx-text-fill: -cf-text;
+    -fx-background-color: -cf-field;
+    -fx-padding: 8 10;
+    -fx-font-size: 13px;
+}
+.list-cell:filled:hover { -fx-background-color: #232428; }
+.list-cell:filled:selected {
+    -fx-background-color: rgba(245, 197, 66, 0.14);
+    -fx-text-fill: -cf-text;
+}
+
+.summary-list {
+    -fx-background-color: -cf-field;
+    -fx-background-radius: 8;
+}
+.summary-row {
+    -fx-padding: 14 16;
+    -fx-font-size: 14px;
+    -fx-border-color: transparent transparent -cf-line-soft transparent;
+    -fx-border-width: 0 0 1 0;
+}
+.summary-yes { -fx-text-fill: -cf-text; }
+.summary-no { -fx-text-fill: -cf-faint; }
+
+.check-box { -fx-text-fill: -cf-text; }
+.toggle-row {
+    -fx-font-family: "Bricolage Grotesque SemiBold";
+    -fx-font-size: 15px;
+    -fx-padding: 2 0 2 0;
+}
+.check-box .box { -fx-padding: 4; }
+.check-box .box {
+    -fx-background-color: -cf-field;
+    -fx-border-color: -cf-line;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+}
+.check-box:selected .box {
+    -fx-background-color: -cf-marker;
+    -fx-border-color: -cf-marker;
+}
+.check-box:selected .mark { -fx-background-color: -cf-on-marker; }
+
+.subtitle-overlay-label { -fx-padding: 4 10; }
+
+.slider .track {
+    -fx-background-color: -cf-field;
+    -fx-background-radius: 3;
+}
+.slider .thumb {
+    -fx-background-color: -cf-text;
+    /* No effect: this thumb moves continuously during playback. */
+}
+
+.tooltip {
+    -fx-background-color: #34353b;
+    -fx-text-fill: -cf-text;
+    -fx-font-family: "Bricolage Grotesque";
+    -fx-font-size: 12.5px;
+    -fx-background-radius: 6;
+    -fx-padding: 6 10;
+}
+
+/* ---- Timeline scrubber ---- */
+
+.scrubber-track {
+    -fx-fill: -cf-field;
+    -fx-stroke: -cf-line;
+}
+.scrubber-selected { -fx-fill: rgba(237, 236, 231, 0.10); }
+.scrubber-playhead {
+    -fx-fill: -cf-text;
+    /* No effect: repositions on every playback tick. */
+}
+.scrubber-handle-in { -fx-fill: -cf-in; }
+.scrubber-handle-out { -fx-fill: -cf-out; }
+.scrubber-tick-label {
+    -fx-fill: -cf-faint;
+    -fx-font-family: "JetBrains Mono";
+    -fx-font-size: 10px;
+}
+.scrubber-playhead-label {
+    -fx-fill: -cf-text;
+    -fx-font-family: "JetBrains Mono SemiBold";
+    -fx-font-size: 11px;
+}
+
+/* ---- Watermark overlay (unchanged behaviour, palette only) ---- */
+
+.watermark-box {
+    -fx-fill: rgba(245, 197, 66, 0.14);
+    -fx-stroke: -cf-marker;
+    -fx-stroke-width: 2;
+    -fx-stroke-dash-array: 6 4;
+}
+.watermark-resize-handle { -fx-fill: -cf-marker; }
+
+/* ---- Scrollbars ---- */
+
+.scroll-bar { -fx-background-color: transparent; }
+.scroll-bar .thumb {
+    -fx-background-color: -cf-line;
+    -fx-background-radius: 6;
+}
+.scroll-bar .thumb:hover { -fx-background-color: #4a4b53; }
+.scroll-bar .track { -fx-background-color: transparent; }
+.scroll-bar .increment-button, .scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
