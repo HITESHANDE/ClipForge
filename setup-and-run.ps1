@@ -75,7 +75,10 @@ function Get-PythonCandidates {
         }
     } catch {}
     if (Test-Command py) { $cands += "py" }
-    return $cands | Select-Object -Unique
+    # @(...) forces an array even when there's exactly one (or zero) results -- without it,
+    # PowerShell collapses a single-item pipeline result to a plain string, and indexing
+    # that with [0] silently grabs its first CHARACTER instead of the first array element.
+    return @($cands | Select-Object -Unique)
 }
 
 # Written to a temp .py file and run as a script, not passed via "-c" -- a multi-line
@@ -92,7 +95,9 @@ sys.exit(1 if missing else 0)
 '@ | Set-Content -Path $checkScriptPath -Encoding ASCII
 
 $python = $null
-$candidates = Get-PythonCandidates
+# @() wraps the CALL too -- PowerShell re-collapses a single-item array back to a plain
+# string at the assignment itself, even though the function already returns an array.
+$candidates = @(Get-PythonCandidates)
 foreach ($c in $candidates) {
     & $c $checkScriptPath
     if ($LASTEXITCODE -eq 0) { $python = $c; break }
@@ -108,7 +113,7 @@ if ($python) {
     } else {
         Write-Host "  Python not found. Installing Python 3.10..." -ForegroundColor Yellow
         winget install --id Python.Python.3.10 -e --accept-package-agreements --accept-source-agreements
-        Write-Host "  Python just installed - re-run this script in a NEW terminal to continue (PATH needs to refresh)." -ForegroundColor Red
+        Write-Host "  Python just installed. FULLY CLOSE AND REOPEN your terminal app (if you're in VS Code, close VS Code entirely, not just the terminal tab -- it only reads PATH once, when it starts) then re-run this script." -ForegroundColor Red
         exit 0
     }
     if (Test-Command nvidia-smi) {
@@ -122,7 +127,7 @@ if ($python) {
 }
 
 if ($needsRestart) {
-    Write-Host "`nSome tools were just installed. Close this terminal, open a NEW one, and re-run this script so PATH picks them up." -ForegroundColor Red
+    Write-Host "`nSome tools were just installed. FULLY CLOSE AND REOPEN your terminal app (if you're in VS Code, close VS Code entirely, not just the terminal tab -- it only reads PATH once, when it starts), then re-run this script." -ForegroundColor Red
     exit 0
 }
 
